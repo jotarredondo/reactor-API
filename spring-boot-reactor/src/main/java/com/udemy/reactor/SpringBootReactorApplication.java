@@ -1,5 +1,8 @@
 package com.udemy.reactor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -22,9 +25,16 @@ public class SpringBootReactorApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		
+		List<String> usuariosList =  new ArrayList<String>();
+		usuariosList.add("Jose Arredondo");
+		usuariosList.add("Norman Reedus");
+		usuariosList.add("Sasha Grey");
+		usuariosList.add("Quentin Tarantino");
+		usuariosList.add("Craig Ferguson");
+		usuariosList.add("Sasha Blue");
 		
-		Flux<Usuario> nombres = Flux.just("Jose Arredondo","Norman Reedus","Sasha Grey", "Quentin Tarantino","Craig Ferguson", "Sasha Blue")
-				.map(nombre -> new Usuario(nombre.split(" ")[0].toUpperCase(), nombre.split(" ")[1].toUpperCase()))
+		Flux<String> nombres = Flux.fromIterable(usuariosList);/*Flux.just("Jose Arredondo","Norman Reedus","Sasha Grey", "Quentin Tarantino","Craig Ferguson", "Sasha Blue");*/
+				Flux<Usuario> usuarios = nombres.map(nombre -> new Usuario(nombre.split(" ")[0].toUpperCase(), nombre.split(" ")[1].toUpperCase()))
 				.filter(usuario -> usuario.getNombre().toLowerCase().equals("sasha"))
 				.doOnNext(usuario -> {
 					if(usuario == null) {
@@ -38,7 +48,7 @@ public class SpringBootReactorApplication implements CommandLineRunner {
 				return usuario;
 				});
 		
-		nombres.subscribe(e -> log.info(e.toString()), error -> log.error(error.getMessage()),
+		usuarios.subscribe(e -> log.info(e.toString()), error -> log.error(error.getMessage()),
 				new Runnable() {
 
 					@Override
